@@ -3,6 +3,7 @@ import Auxiliar from '../../hoc/Auxiliar';
 import Burger from '../../components/Burger/Burger';
 import BuilderControls from '../../components/Burger/BuilderControls/BuilderControls';
 import Modal from '../../components/UI/Modal/Modal';
+import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 
 const INGREDIENT_PRICES = {
     salad: 10.5,
@@ -27,7 +28,8 @@ class BurgerBuilder extends Component {
             meat: 0
         },
         totalPrice: 4,
-        purchasable: false
+        purchasable: false,
+        purchasing : false
     }
     upDatePurchaseState = (ingredient) => {
         const referencia = (sum, el) => sum + el
@@ -51,6 +53,7 @@ class BurgerBuilder extends Component {
         this.setState({ totalPrice: newPrice, ingredients: updatedIngredient });
         this.upDatePurchaseState(updatedIngredient);
     }
+    
 
     removeIngredientHandler = (type) => {
         const oldCount = this.state.ingredients[type];
@@ -69,6 +72,13 @@ class BurgerBuilder extends Component {
         this.upDatePurchaseState(updatedIngredient);
     }
 
+    purchaHandler = () => this.setState({purchasing: true});
+
+    purchaseCancelHandler = () =>  this.setState({purchasing : false});
+
+    purchaseContinue = () => alert("You continue!!");
+       
+
 
     render() {
 
@@ -84,14 +94,19 @@ class BurgerBuilder extends Component {
 
             <Auxiliar>
 
-                <Modal />
+                <Modal show={this.state.purchasing} modelClose={this.purchaseCancelHandler}>
+                    <OrderSummary ingredientes = {this.state.ingredients} 
+                    cancel={this.purchaseCancelHandler}
+                    continue={this.purchaseContinue}></OrderSummary>
+                    </Modal>
                 <Burger ingredients={this.state.ingredients} />
 
                 <BuilderControls ingredientsAdd={this.addIngredientHandler}
                     ingredientRemove={this.removeIngredientHandler}
                     disabled={diableInfo}
                     purchasable={this.state.purchasable}
-                    price={this.state.totalPrice} />
+                    price={this.state.totalPrice} 
+                    ordened = {this.purchaHandler}/>
 
             </Auxiliar>
         );
