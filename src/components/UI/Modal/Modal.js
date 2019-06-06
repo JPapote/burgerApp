@@ -1,22 +1,33 @@
-import React from 'react';
-import stylos from './Modal.module.css';
-//import Auxiliar from '../../../hoc/Auxiliar';
+import React, {Component} from 'react';
+import classes from './Modal.module.css';
+import Auxiliar from '../../../hoc/Auxiliar/Auxiliar';
 //import OrderSummary from '../../../components/Burger/OrderSummary/OrderSummary';
 import Backdrop from '../Backdrop/Backdrop';
-const model = (props) =>(
-        <React.Fragment>
+class Modal  extends Component {
         
-        <Backdrop show={props.show} clicked={props.modelClose}/>
-        <div className={stylos.Modal}
-        style={{transform: props.show ? 'translateY(0)' : 'translateY(-100vh)',
         
-        opacity: props.show ? '1' : '0'}}>
+        shouldComponentUpdate(nextProps, nextState) {
+                return nextProps.show !== this.props.show;
+        }
 
-                {props.children}
+        componentWillUpdate() {
+                console.log("[Modal] componentWillUpdate");
+        }
+
+
+        render(){
+                return(
+        <Auxiliar>
+        <Backdrop show={this.props.show} clicked={this.props.modelClose}/>
+        <div className={classes.Modal}
+        style={{transform: this.props.show ? 'translateY(0)' : 'translateY(-100vh)',
+        opacity: this.props.show ? '1' : '0'}}>
+                {this.props.children}
 
         </div>
-        </React.Fragment>
-    
-);
+        </Auxiliar>
+                );
+        }
+}
 
-export default model;
+export default Modal;
