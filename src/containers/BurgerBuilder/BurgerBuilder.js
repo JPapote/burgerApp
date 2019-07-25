@@ -8,6 +8,7 @@ import Spinner from '../../components/UI/Spinner/Spinner';
 import axios from '../../axios-ordens';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 
+
 const INGREDIENT_PRICES = {
     salad: 10.5,
     bacon: 6.23,
@@ -87,27 +88,36 @@ class BurgerBuilder extends Component {
     purchaseCancelHandler = () => this.setState({ purchasing: false });
 
     purchaseContinue = () => {
-        this.setState({ loading: true });
-        const orden = {
-            ingredient: this.state.ingredients,
-            price: this.state.totalPrice,
-            customer: {
-                name: 'Javier Baez',
-                address: {
-                    street: 'Alemanes del Volga 80',
-                    zipCode: '41351',
-                    country: 'Argentina'
-                },
-                email: 'javier.bb@live.com'
-            },
-            deliveryMethod: 'fasttest'
-        };
+        // this.setState({ loading: true });
+        // const orden = {
+        //     ingredient: this.state.ingredients,
+        //     price: this.state.totalPrice,
+        //     customer: {
+        //         name: 'Javier Baez',
+        //         address: {
+        //             street: 'Alemanes del Volga 80',
+        //             zipCode: '41351',
+        //             country: 'Argentina'
+        //         },
+        //         email: 'javier.bb@live.com'
+        //     },
+        //     deliveryMethod: 'fasttest'
+        // };
 
-        axios.post('/ordens.json', orden)
-            .then(response => this.setState({ loading: false, purchasing: false }))
-            .catch(error => this.setState({ loading: false, purchasing: false }));
+        // axios.post('/ordens.json', orden)
+        //     .then(response => this.setState({ loading: false, purchasing: false }))
+        //     .catch(error => this.setState({ loading: false, purchasing: false }));
 
-        //alert("You continue!!");
+        const queryParams = [];
+        for(let i in this.state.ingredients){
+            queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
+        }
+        queryParams.push('price=' + this.state.totalPrice);
+        const queryString = queryParams.join('&');
+        this.props.history.push({
+            pathname: './checkout',
+            search: '?' + queryString
+        });
     }
 
 
