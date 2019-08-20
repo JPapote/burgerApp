@@ -19,7 +19,7 @@ const checkoutSummary = (props) => {
                 clicked= {props.handlerContinue}>Continue</Button>
             </div>
         </div>
-    )
+    );
 }
 
 export default checkoutSummary;

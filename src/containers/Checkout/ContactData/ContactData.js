@@ -1,53 +1,208 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Button from '../../../components/UI/Button/Button';
 import classes from './ContactData.module.css';
 import axios from '../../../axios-ordens';
-
-class ContactData extends Component{
+import Spinner from '../../../components/UI/Spinner/Spinner';
+import Input from '../../../components/UI/Input/Input';
+//import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler';
+class ContactData extends Component {
 
     state = {
-        name: '',
-        email: '',
-        adreess: {
-            street: '',
-           postalCode: '' 
+        ordenForm: {
+            name: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: "Your name"
+                },
+                value: '',
+                validation: {
+                    required: true,
+                    maxLength: 30,
+                    minLength: 2
+                },
+                valid: false,
+                touche: false
+            },
+
+            street: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: "Street"
+                },
+                value: '',
+                validation: {
+                    required: true,
+                    maxLength: 30,
+                    minLength: 2
+                },
+                valid: false,
+                touche: false
+                
+            },
+            zipCode: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: "ZipCode"
+                },
+                value: '',
+                validation: {
+                    required: true,
+                    maxLength: 30,
+                    minLength: 2
+                },
+                valid: false,
+                touche: false
+            },
+            country: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: "Your Country"
+                },
+                value: '',
+                validation: {
+                    required: true,
+                    maxLength: 30,
+                    minLength: 2
+                },
+                valid: false,
+                touche: false
+            },
+
+            email: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'email',
+                    placeholder: "Your email"
+                },
+                value: '',
+                validation: {
+                    required: true,
+                    maxLength: 30,
+                    minLength: 2
+                },
+                valid: false,
+                touche: false
+            },
+            deliveryMethod: {
+                elementType: 'select',
+                elementConfig: {
+                    options: [
+                        { value: 'fastest', displayValue: 'Fastest' },
+                        { value: 'cheapest', displayValue: 'Cheapest' }
+                    ]
+                },
+                value: '',
+                valid: true
+            }
         },
+        formIsValid: false,
+
         loading: false
     }
 
     handlerPedido = (event) => {
         event.preventDefault();
         this.setState({ loading: true });
-        const orden = {
+       const dataOrder = {}
+        for(let formOrder in this.state.ordenForm){
+            dataOrder[formOrder]=this.state.ordenForm[formOrder].value;
+        }
+
+
+        const order = {
             ingredient: this.props.ingredients,
-            price: this.state.price,
-            customer: {
-                name: 'Javier Baez',
-                address: {
-                    street: 'Alemanes del Volga 80',
-                    zipCode: '41351',
-                    country: 'Argentina'
-                },
-                email: 'javier.bb@live.com'
-            },
-            deliveryMethod: 'fasttest'
+            price: this.props.price,
+            orderData : dataOrder
         };
 
-        axios.post('/ordens.json', orden)
-            .then(response => this.setState({ loading: false, purchasing: false }))
-            .catch(error => this.setState({ loading: false, purchasing: false }));
+        axios.post('/orders.json', order)
+            .then(response => {
+                this.setState({ loading: false });
+               this.props.history.push('/');
+
+            })
+            .catch(error => this.setState({ loading: false }));
+    }
+
+    validationForm = (value, rule) => {
+        let isValid = true;
+
+        if(!rule){
+            return true;
+        }
+
+        if(rule.required){
+            isValid = value.trim() !== '' && isValid;
+        }
+        if(rule.minLength){
+            isValid = value.length >= rule.minLength && isValid;
+        }
+
+        if(rule.maxLength){
+            isValid = value.length <= rule.maxLength && isValid;
+        }
+        
+
+        return isValid;
+    }
+
+    onHandlerChanged = (event, formElmentId) => {
+        const updateOrdenForm = {
+            ...this.state.ordenForm
+        };
+        const updateFormElement = {
+            ...updateOrdenForm[formElmentId]
+        };
+        updateFormElement.value = event.target.value;
+        updateFormElement.valid=this.validationForm(updateFormElement.value, updateFormElement.validation);
+        updateFormElement.touche=true;
+        updateOrdenForm[formElmentId] = updateFormElement;
+
+        let formIsValid = true;
+        for(let inputIdentifier in updateOrdenForm){
+            formIsValid=updateOrdenForm[inputIdentifier].valid && formIsValid;
+        }
+        this.setState({ordenForm: updateOrdenForm, formIsValid:formIsValid});
     }
     render() {
-        return(
+
+        const formElementArray = [];
+
+        for(let key in this.state.ordenForm){
+            formElementArray.push({
+                id : key,
+            config : this.state.ordenForm[key],
+            });
+            
+        }
+
+        let formu = (
+        <form onSubmit={this.handlerPedido}>
+            {formElementArray.map(formElement => (
+                <Input 
+                       key={formElement.id}
+                       elementType={formElement.config.elementType}
+                       elementConfig={formElement.config.elementConfig}
+                       value={formElement.config.value}
+                       valid = {!formElement.config.valid}
+                       touche={formElement.config.touche}
+                       change={(event) => this.onHandlerChanged(event, formElement.id)}
+                       />
+        ))}   
+            <Button btnType='Success' disabled={!this.state.formIsValid}>New Orden</Button>
+        </form>
+        );
+        if (this.state.loading) {
+            formu = <Spinner />
+        }
+        return (
             <div className={classes.ContactData}>
                 <h4>Enter Your Contact Data</h4>
-                <form>
-                    <input className={classes.Input} type='text' name='name' placeholder='Your Name'/>
-                    <input className={classes.Input} type='email' name='email' placeholder='Your Email'/>
-                    <input className={classes.Input} type='text' name='street' placeholder='Your Street'/>
-                    <input className={classes.Input} type='text' name='postalCode' placeholder='Your PostalCode'/>
-                </form>
-                <Button btnType='Success'>New Orden</Button>
+                {formu}
             </div>
         );
     }
