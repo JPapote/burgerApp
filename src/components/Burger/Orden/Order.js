@@ -3,7 +3,7 @@ import classes from './Order.module.css';
 
 const order = (props) => {
     const ingredients = [];
-
+    console.log(props.ingredient);
     for(let i in props.ingredient){
         ingredients.push({name: i,  mount:props.ingredient[i]})
     }

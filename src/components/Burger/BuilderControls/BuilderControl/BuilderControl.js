@@ -1,5 +1,4 @@
 import React from 'react';
-
 import classes from './BuilderControl.module.css';
 
 const builderControl = (props) =>(

@@ -3,12 +3,11 @@ import stylos from './BuilderControls.module.css';
 import BuilderControl from './BuilderControl/BuilderControl';
 import classes from './ButtonCode.module.css';
 
-
 const control = [
-    {label: 'Salad', type:'salad'},
     {label: 'Bacon', type:'bacon'},
+    {label: 'Cheese', type:'cheese'},
     {label: 'Meat', type:'meat'},
-    {label: 'Cheese', type:'cheese'}
+    {label: 'Salad', type:'salad'}
 ];
 const builderControls = (props) =>(
     <div className= {stylos.BuilderControls}>
@@ -18,7 +17,7 @@ const builderControls = (props) =>(
         key={ctrl.label} 
         label={ctrl.label}
 //        type={ctrl.type}
-        added = {() => props.ingredientsAdd(ctrl.type)}
+        added = { () => props.ingredientAdd(ctrl.type)}
         remove = { () => props.ingredientRemove(ctrl.type)}
         disabled = {props.disabled[ctrl.type]}
         
