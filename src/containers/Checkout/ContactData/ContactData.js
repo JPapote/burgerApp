@@ -21,8 +21,7 @@ class ContactData extends Component {
                 value: '',
                 validation: {
                     required: true,
-                    maxLength: 30,
-                    minLength: 2
+                    
                 },
                 valid: false,
                 touche: false
@@ -37,8 +36,7 @@ class ContactData extends Component {
                 value: '',
                 validation: {
                     required: true,
-                    maxLength: 30,
-                    minLength: 2
+                    
                 },
                 valid: false,
                 touche: false
@@ -53,8 +51,9 @@ class ContactData extends Component {
                 value: '',
                 validation: {
                     required: true,
-                    maxLength: 30,
-                    minLength: 2
+                    maxLength: 5,
+                    minLength: 5,
+                    isNumeric: true
                 },
                 valid: false,
                 touche: false
@@ -68,8 +67,7 @@ class ContactData extends Component {
                 value: '',
                 validation: {
                     required: true,
-                    maxLength: 30,
-                    minLength: 2
+        
                 },
                 valid: false,
                 touche: false
@@ -84,8 +82,7 @@ class ContactData extends Component {
                 value: '',
                 validation: {
                     required: true,
-                    maxLength: 30,
-                    minLength: 2
+                   isEmail: true
                 },
                 valid: false,
                 touche: false
@@ -98,7 +95,8 @@ class ContactData extends Component {
                         { value: 'cheapest', displayValue: 'Cheapest' }
                     ]
                 },
-                value: '',
+                value: 'fastest',
+                validation:{},
                 valid: true
             }
         },
@@ -117,10 +115,11 @@ class ContactData extends Component {
         const order = {
             ingredient: this.props.ing,
             price: this.props.price,
-            orderData : dataOrder
+            orderData : dataOrder,
+            userId: this.props.userId
         };
 
-        this.props.onOrdenBurger(order);
+        this.props.onOrdenBurger(order, this.props.token);
                   
     }
 
@@ -140,6 +139,16 @@ class ContactData extends Component {
 
         if(rule.maxLength){
             isValid = value.length <= rule.maxLength && isValid;
+        }
+
+        if (rule.isEmail) {
+            const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+            isValid = pattern.test(value) && isValid
+        }
+
+        if (rule.isNumeric) {
+            const pattern = /^\d+$/;
+            isValid = pattern.test(value) && isValid
         }
         
 
@@ -191,6 +200,7 @@ class ContactData extends Component {
         ))}   
             <Button btnType='Success' disabled={!this.state.formIsValid}>New Orden</Button>
         </form>
+        
         );
         if (this.props.loading) {
             formu = <Spinner />
@@ -199,6 +209,7 @@ class ContactData extends Component {
             <div className={classes.ContactData}>
                 <h4>Enter Your Contact Data</h4>
                 {formu}
+                
             </div>
         );
     }
@@ -208,12 +219,14 @@ const mapStateToProps = state => {
     return{
         ing: state.burgerBuilder.ingredients,
         price: state.burgerBuilder.totalPrice,
-        loading: state.order.loading
-    }
+        loading: state.order.loading,
+        token: state.auth.token,
+        userId: state.auth.userId
+    };
 }
 const mapDispatchToProps = dispatch =>{
     return{
-        onOrdenBurger: (orderData) => dispatch (actions.purchaseBurger(orderData))
+        onOrdenBurger: (orderData, token) => dispatch (actions.purchaseBurger(orderData, token))
     };
 }
 

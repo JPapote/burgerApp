@@ -25,13 +25,10 @@ class BurgerBuilder extends Component {
         
     }
     componentDidMount() {
-        console.log(this.props.ing)
         this.props.onInitIngredient();
      }
     upDatePurchaseState = (ingredient) => {
         const referencia = (sum, el) => sum + el;
-        console.log("el de pruchase state");
-        console.log(ingredient);
         const sum = Object.keys(ingredient)
             .map(igKey => ingredient[igKey])
             .reduce(referencia, 0);
@@ -41,7 +38,14 @@ class BurgerBuilder extends Component {
 
   
     purchaHandler = () => {
+        
+        if(this.props.isAuthenticated){
         this.setState({ purchasing: true });
+        }
+        else{
+            this.props.onSetAuthRedirectPath("/checkout");
+            this.props.history.push("/auth");
+        }
     }
 
     purchaseCancelHandler = () => {
@@ -49,7 +53,7 @@ class BurgerBuilder extends Component {
     }
     purchaseContinue = () => {
         this.props.onPurchaseInit();
-        this.props.history.push('/checkout');
+        this.props.history.push("/checkout");
        
     }
 
@@ -68,9 +72,6 @@ class BurgerBuilder extends Component {
 
         let burger = this.props.error ? <p>Ingredient can´t be loadend</p> : <Spinner />;
         if (this.props.ing) {
-            console.log( "el del if")
-            console.log(this.props)
-            console.log(this.props.ing);
             burger =(<Auxiliar>
                     <Burger ingredients={this.props.ing} />
                     <BuilderControls 
@@ -79,7 +80,8 @@ class BurgerBuilder extends Component {
                         disabled={diableInfo}
                         purchasable={this.upDatePurchaseState(this.props.ing)}
                         price={this.props.price}
-                        ordened={this.purchaHandler} />
+                        ordened={this.purchaHandler} 
+                        isAuth={this.props.isAuthenticated}/>
                 </Auxiliar>
                 );
             ordenSummary = <OrderSummary ingredientes={this.props.ing}
@@ -107,7 +109,8 @@ class BurgerBuilder extends Component {
         return {
          ing : state.burgerBuilder.ingredients,
          price: state.burgerBuilder.totalPrice,
-         error: state.burgerBuilder.error
+         error: state.burgerBuilder.error,
+         isAuthenticated: state.auth.token !== null
         };
     };
 
@@ -116,7 +119,8 @@ class BurgerBuilder extends Component {
             onIngredientADD: (ingName) => dispatch(actions.addIngredient(ingName)),
             onIngredientREMOVE: (ingName) => dispatch(actions.removeIngredient(ingName)),
             onInitIngredient: () => dispatch (actions.initIngredient()),
-            onPurchaseInit : () => dispatch(actions.purchaseInit())
+            onPurchaseInit : () => dispatch(actions.purchaseInit()),
+            onSetAuthRedirectPath : (path) => dispatch(actions.setRedirectAuth(path))
         };
     };
 
