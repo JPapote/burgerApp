@@ -1,41 +1,39 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect} from 'react';
 import Modal from '../../components/UI/Modal/Modal';
 
 const withErrorHandler = (WrappedComponent, axios) =>{
-    return class extends Component{
-        state = {
-            error: null
-        }
-        componentWillMount () {
-            this.reqInterceptors = axios.interceptors.request.use(req => {
-                this.setState({error: null});
-                return req;
+    return props =>{
+        const [error, setError] = useState(null);
+
+        
+            const reqInterceptors = axios.interceptors.request.use(req => {
+            setError(null);
+            return req;
+            })
+            const resInterceptors = axios.interceptors.response.use(res => res, err =>{
+                setError(err);
             });
-            this.resInterceptors = axios.interceptors.response.use(res => res, error =>{
-                this.setState({error: error});
-            });
+
+        useEffect(()=> {       
+            axios.interceptors.request.eject(reqInterceptors);
+            axios.interceptors.response.eject(resInterceptors);
+        }, [reqInterceptors, resInterceptors])
+
+      const  errorConfirmedHandler = () => {
+            setError(null);
         }
 
-        componentWillUnmount () {
-            axios.interceptors.request.eject(this.reqInterceptors);
-            axios.interceptors.response.eject(this.resInterceptors);
-        }
-
-        errorConfirmedHandler = () => {
-            this.setState({error: null});
-        }
-
-        render(){
+        
         return(
             <React.Fragment>
-                <Modal show={this.state.error}
-                clicked={this.state.errorConfirmedHandler}>
-                    {this.state.error ? this.state.error.message : null}
+                <Modal show={error}
+                clicked={errorConfirmedHandler}>
+                    {error ? error.message : null}
                 </Modal>
-            <WrappedComponent {...this.props}/>
+            <WrappedComponent {...props}/>
             </React.Fragment>
         );
-        }
+        
     }
 }
 

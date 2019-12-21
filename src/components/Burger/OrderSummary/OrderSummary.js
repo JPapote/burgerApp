@@ -1,15 +1,14 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Auxiliar from '../../../hoc/Auxiliar/Auxiliar';
 import Button from '../../UI/Button/Button';
 
-class OrderSummary extends Component {
-    render(){
-        const ingredients = Object.keys(this.props.ingredientes)
+const OrderSummary = (props) => {
+        const ingredients = Object.keys(props.ingredientes)
     .map(igKey => {
         return(
             <li key={igKey}>
                 <span style={{textTransform:'capitalize'}}> {igKey} </span>:
-                {this.props.ingredientes[igKey]}
+                {props.ingredientes[igKey]}
                 </li>
         );
     });
@@ -21,14 +20,14 @@ class OrderSummary extends Component {
             <ul>
                 {ingredients }
             </ul>
-            <p><strong>Preci: ${this.props.price.toFixed(2)}</strong></p>
+            <p><strong>Preci: ${props.price.toFixed(2)}</strong></p>
             <p>Continue to checkout?</p>
-            <Button btnType='Danger' clicked= {this.props.cancel}>CANCEL</Button>
-            <Button btnType = 'Success' clicked={this.props.continue}>CONTINUE</Button>
+            <Button btnType='Danger' clicked= {props.cancel}>CANCEL</Button>
+            <Button btnType = 'Success' clicked={props.continue}>CONTINUE</Button>
           
         </Auxiliar>
     );
-        }  
+        
     
 }
 

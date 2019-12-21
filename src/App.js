@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {useEffect} from 'react';
 import Layout from './hoc/Layout/Layout';
 import {Route, Switch, withRouter, Redirect} from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -8,13 +8,14 @@ import Orders from './containers/Orders/Orders';
 import Auth from './containers/Auth/Auth';
 import Logout from './containers/Auth/logout/Logout';
 import * as methodIndex from './store/actions/index';
-class App extends Component {
 
-  componentDidMount() {
-    this.props.onTryAutoSignup();
-  }
 
-  render(){
+const App = (props) =>{
+
+  const {onTryAutoSignup } = props;
+  useEffect( () =>{
+    onTryAutoSignup();
+  },[onTryAutoSignup]);
 
     let routes = (
       <Switch>
@@ -24,7 +25,7 @@ class App extends Component {
       </Switch>
     ) ;
 
-    if(this.props.isAuthenticated){
+    if(props.isAuthenticated){
       routes = (
         <Switch>
          <Route path="/" exact component={BurgerBuilder} />
@@ -42,7 +43,7 @@ class App extends Component {
         </Layout>
       </div>
     );
-  }
+  
 }
 
 const mapStateToProps = state => {

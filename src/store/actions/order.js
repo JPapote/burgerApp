@@ -24,17 +24,11 @@ export const purchaseBurgerStart = () => {
 };
 
 export const purchaseBurger = (orderData, token) =>{
-    return  dispatch =>{
-        dispatch(purchaseBurgerStart());
-        axios.post('orders.json?auth='+ token, orderData)
-        .then(response => {
-            console.log(response.data);
-            dispatch(purchaseBurgerSucces(response.data.name, orderData));
-        })
-        .catch(error => {
-           dispatch(purchaseBurgerFail(error));
-        });
-    };
+    return  {
+        type: actionType.PURCHARSE_BURGER_SAGA,
+        orderData: orderData, 
+        token: token
+    }
 };
 
 export const purchaseInit = () => {
